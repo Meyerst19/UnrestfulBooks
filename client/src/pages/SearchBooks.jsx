@@ -31,7 +31,9 @@ const SearchBooks = () => {
     }
 
     try {
-      const response = await searchGoogleBooks(searchInput);
+      const response = await fetch(
+        `https://www.googleapis.com/books/v1/volumes?q=${searchInput}`
+      );
 
       if (!response.ok) {
         throw new Error("something went wrong!");
@@ -65,20 +67,30 @@ const SearchBooks = () => {
     if (!token) {
       return false;
     }
-    const [saveBook, { error }] = useMutation(SAVE_BOOK);
+
     try {
-      const response = await saveBook(parent, { bookToSave }, { user });
-
-      if (!response.ok) {
-        throw new Error("something went wrong!");
-      }
-
-      // if book successfully saves to user's account, save book id to state
+      const { data } = await saveBook({
+        variables: { bookData: { ...bookToSave } },
+      });
       setSavedBookIds([...savedBookIds, bookToSave.bookId]);
     } catch (err) {
-      console.error(err);
+      console.log(err);
     }
   };
+  //   const [saveBook, { error }] = useMutation(SAVE_BOOK);
+  //   try {
+  //     const response = await saveBook(parent, { bookToSave }, { user });
+
+  //     if (!response.ok) {
+  //       throw new Error("something went wrong!");
+  //     }
+
+  //     // if book successfully saves to user's account, save book id to state
+  //     setSavedBookIds([...savedBookIds, bookToSave.bookId]);
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
 
   return (
     <>
